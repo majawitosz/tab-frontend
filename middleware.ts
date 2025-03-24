@@ -1,11 +1,22 @@
 /** @format */
+import { NextRequest, NextResponse } from 'next/server';
 
-import NextAuth from 'next-auth';
-import { authConfig } from './auth.config';
+export function middleware(request: NextRequest) {
+    const token = request.cookies.get('accessToken')?.value; // Or use headers if token is sent there
 
-export default NextAuth(authConfig).auth;
+    // Define protected routes
+    if (request.nextUrl.pathname.startsWith('/dashboard')) {
+        if (!token) {
+            // Redirect to login if no token
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+
+        // Optionally verify token with Django backend here (see Step 4)
+    }
+
+    return NextResponse.next();
+}
 
 export const config = {
-    // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-    matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+    matcher: ['/dashboard/:path*'], // Apply middleware to /dashboard and subroutes
 };
