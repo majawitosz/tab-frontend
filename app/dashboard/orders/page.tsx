@@ -1,5 +1,5 @@
 /** @format */
 
 export default function Page() {
-    return <p>Orders Page</p>;
+	return <p>Orders Page</p>;
 }
