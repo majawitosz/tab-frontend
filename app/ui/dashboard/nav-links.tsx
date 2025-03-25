@@ -8,10 +8,17 @@ import {
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ComponentType, SVGProps } from 'react';
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
-const links = [
+interface NavLink {
+	name: string;
+	href: string;
+	icon: ComponentType<SVGProps<SVGSVGElement>>; // Typ dla komponentu ikony
+}
+
+const links: NavLink[] = [
 	{ name: 'Home', href: '/dashboard', icon: HomeIcon },
 	{
 		name: 'Menu',
@@ -21,12 +28,13 @@ const links = [
 	{ name: 'Orders', href: '/dashboard/orders', icon: RectangleStackIcon },
 ];
 
-export default function NavLinks() {
-	const pathname = usePathname();
+export default function NavLinks(): React.ReactNode {
+	const pathname: string = usePathname();
 	return (
 		<>
-			{links.map((link) => {
-				const LinkIcon = link.icon;
+			{links.map((link: NavLink) => {
+				const LinkIcon: ComponentType<SVGProps<SVGSVGElement>> =
+					link.icon;
 				return (
 					<Link
 						key={link.name}

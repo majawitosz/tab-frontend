@@ -2,10 +2,8 @@
 
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { geistSans } from '@/app/ui/fonts';
-import Image from 'next/image';
 
-export default function Page() {
+export default function Page(): React.ReactNode {
 	return (
 		<main className='flex min-h-screen flex-col p-6'>
 			<div className='mt-4 flex grow flex-col gap-4 md:flex-row'>

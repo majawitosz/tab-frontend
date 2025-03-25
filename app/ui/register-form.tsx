@@ -11,7 +11,7 @@ import { Button } from './button';
 import { useState } from 'react';
 import { registerUser, User, RegisterResponse } from '@/app/utils/api';
 
-export default function RegisterForm() {
+export default function RegisterForm(): React.ReactNode {
 	const [formData, setFormData] = useState<User>({
 		username: '',
 		password: '',
@@ -21,7 +21,9 @@ export default function RegisterForm() {
 	const [error, setError] = useState<string>('');
 	const [repeatedPassword, setRepeatedPassword] = useState<string>('');
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
 		if (e.target.name === 'repeatedpassword') {
 			setRepeatedPassword(e.target.value);
 		} else {
@@ -32,7 +34,9 @@ export default function RegisterForm() {
 		}
 	};
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit: (e: React.FormEvent) => Promise<void> = async (
+		e: React.FormEvent
+	) => {
 		e.preventDefault();
 		setMessage('');
 		setError('');
@@ -46,8 +50,12 @@ export default function RegisterForm() {
 			setMessage(`User ${response.username} registered successfully!`);
 			setFormData({ username: '', password: '', email: '' });
 			setRepeatedPassword('');
-		} catch (err: any) {
-			setError(err.message || 'An error occurred during registration');
+		} catch (err: unknown) {
+			setError(
+				err instanceof Error
+					? err.message
+					: 'An error occurred during registration'
+			);
 		}
 	};
 	return (

@@ -23,6 +23,7 @@ const eslintConfig = [
 			'.next/',
 			'.husky/',
 		],
+		globals: { React: true },
 
 		extends: [
 			'next/core-web-vitals',
@@ -43,6 +44,7 @@ const eslintConfig = [
 		rules: {
 			semi: ['error', 'always'],
 			quotes: ['error', 'single'],
+			'react/react-in-jsx-scope': 'off',
 			'prefer-arrow-callback': ['error'],
 			'prefer-template': ['error'],
 			'no-var': ['error'],
