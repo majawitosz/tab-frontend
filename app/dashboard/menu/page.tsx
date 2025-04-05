@@ -13,6 +13,7 @@ export default function Page(): React.ReactNode {
 					name={dish.name}
 					desc={dish.desc}
 					pic={dish.pic}
+					allergens={dish.allergens}
 				/>
 			))}
 		</div>
