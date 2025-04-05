@@ -3,4 +3,5 @@ export type Dish = {
 	name: string;
 	desc?: string;
 	pic?: string;
+	allergens?: string[];
 };
