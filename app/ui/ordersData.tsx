@@ -1,4 +1,19 @@
-export const OrdersData = [
+export interface DishesType {
+	dishId: number;
+	dishName: string;
+	quantity: number;
+}
+
+export interface OrdersDataTypes {
+	id: number;
+	tableId: number;
+	createdAt: Date;
+	updatedAt: Date;
+	notes: string;
+	dishes: DishesType[];
+}
+
+export const OrdersData: OrdersDataTypes[] = [
 	{
 		id: 1,
 		tableId: 2,

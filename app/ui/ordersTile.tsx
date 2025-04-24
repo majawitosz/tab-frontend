@@ -1,38 +1,25 @@
 'use client';
 import { JSX, useState } from 'react';
-import { OrdersData } from './ordersData';
-
-interface Dish {
-	dishId: number;
-	dishName: string;
-	quantity: number;
-}
-
-interface Order {
-	id: number;
-	dishes: Dish[];
-	createdAt: Date;
-	updatedAt: Date;
-	tableId: number;
-	notes: string;
-}
+import { DishesType, OrdersData, OrdersDataTypes } from './ordersData';
 
 export function OrdersPage(): JSX.Element {
-	const [orders, setOrders] = useState<Order[]>(OrdersData);
+	const [orders, setOrders] = useState<OrdersDataTypes[]>(OrdersData);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [newOrder, setNewOrder] = useState<Omit<Order, 'id' | 'createdAt' | 'updatedAt'>>({
+	const [newOrder, setNewOrder] = useState<
+		Omit<OrdersDataTypes, 'id' | 'createdAt' | 'updatedAt'>
+	>({
 		dishes: [],
 		tableId: 1,
 		notes: '',
 	});
-	const [newDish, setNewDish] = useState<Dish>({
+	const [newDish, setNewDish] = useState<DishesType>({
 		dishId: 1,
 		dishName: '',
 		quantity: 1,
 	});
 
 	// Funkcja do obsługi otwierania/zamykania modala
-	const toggleModal = (): void => {
+	const toggleModal: () => void = (): void => {
 		setIsModalOpen((prev: boolean) => !prev);
 
 		// Resetuj stan newOrder i newDish, gdy modal jest otwierany
@@ -51,23 +38,33 @@ export function OrdersPage(): JSX.Element {
 	};
 
 	// Funkcja do obsługi dodawania nowego zamówienia
-	const handleAddOrder = (): void => {
-		const orderToAdd: Order = {
+	const handleAddOrder: () => void = (): void => {
+		const orderToAdd: OrdersDataTypes = {
 			id: orders.length + 1,
 			...newOrder,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
-		setOrders((prevOrders: Order[]) => [...prevOrders, orderToAdd]);
+		setOrders((prevOrders: OrdersDataTypes[]) => [
+			...prevOrders,
+			orderToAdd,
+		]);
 		toggleModal(); // Zamknij modal po dodaniu zamówienia
 	};
 
 	// Funkcja do obsługi dodawania dania do zamówienia
-	const handleAddDish = (): void => {
-		setNewOrder((prevOrder: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => ({
-			...prevOrder,
-			dishes: [...prevOrder.dishes, newDish],
-		}));
+	const handleAddDish: () => void = (): void => {
+		setNewOrder(
+			(
+				prevOrder: Omit<
+					OrdersDataTypes,
+					'id' | 'createdAt' | 'updatedAt'
+				>
+			) => ({
+				...prevOrder,
+				dishes: [...prevOrder.dishes, newDish],
+			})
+		);
 		// Resetuj dane nowego dania
 		setNewDish({
 			dishId: 1,
@@ -77,26 +74,34 @@ export function OrdersPage(): JSX.Element {
 	};
 
 	// Funkcja do obsługi zmian w formularzu dania
-	const handleDishInputChange = (
-		e: React.ChangeEvent<HTMLInputElement>): void => {
+	const handleDishInputChange: (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => void = (e: React.ChangeEvent<HTMLInputElement>): void => {
 		const { name, value } = e.target;
-		setNewDish((prev: Dish) => ({
+		setNewDish((prev: DishesType) => ({
 			...prev,
 			[name]:
 				name === 'quantity' || name === 'dishId'
-					? parseInt(value) : value,
+					? parseInt(value)
+					: value,
 		}));
 	};
 
 	// Funkcja do obsługi zmian w formularzu zamówienia
-	const handleOrderInputChange = (
+	const handleOrderInputChange: (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => void = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	): void => {
 		const { name, value } = e.target;
-		setNewOrder((prev: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => ({
-			...prev,
-			[name]: name === 'tableId' ? parseInt(value) : value,
-		}));
+		setNewOrder(
+			(
+				prev: Omit<OrdersDataTypes, 'id' | 'createdAt' | 'updatedAt'>
+			) => ({
+				...prev,
+				[name]: name === 'tableId' ? parseInt(value) : value,
+			})
+		);
 	};
 
 	return (
@@ -122,18 +127,20 @@ export function OrdersPage(): JSX.Element {
 
 			{/* Lista zamówień */}
 			<div className='space-y-4'>
-				{orders.map((order: Order) => (
+				{orders.map((order: OrdersDataTypes) => (
 					<div
 						key={order.id}
 						className='rounded-lg bg-white p-4 shadow-md'
 					>
 						<h3 className='text-lg font-semibold'>{`TABLE: ${order.tableId}, ORDER ID: ${order.id}`}</h3>
 						<ul className='text-sm text-gray-600'>
-							{order.dishes.map((dish: Dish, index: number) => (
-								<li
-									key={index}
-								>{`Dish: ${dish.dishName}, Quantity: ${dish.quantity}`}</li>
-							))}
+							{order.dishes.map(
+								(dish: DishesType, index: number) => (
+									<li
+										key={index}
+									>{`Dish: ${dish.dishName}, Quantity: ${dish.quantity}`}</li>
+								)
+							)}
 						</ul>
 						<p className='text-sm text-gray-600'>{`Notes: ${order.notes}`}</p>
 						<p className='text-sm text-gray-600'>{`Date: ${order.createdAt.toLocaleString()}`}</p>
@@ -219,14 +226,15 @@ export function OrdersPage(): JSX.Element {
 						</div>
 						{/* Wyświetlanie listy dań */}
 						<ul className='mt-4'>
-							{newOrder.dishes.map((dish: Dish, index: number) => (
-								<li
-									key={index}
-									className='text-sm text-gray-600'
-								>
-									{`Dish: ${dish.dishName}, Quantity: ${dish.quantity}`}
-								</li>
-							)
+							{newOrder.dishes.map(
+								(dish: DishesType, index: number) => (
+									<li
+										key={index}
+										className='text-sm text-gray-600'
+									>
+										{`Dish: ${dish.dishName}, Quantity: ${dish.quantity}`}
+									</li>
+								)
 							)}
 						</ul>
 						<div className='mt-4 flex justify-end'>
