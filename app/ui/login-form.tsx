@@ -9,7 +9,8 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import React, { useState } from 'react';
-import { loginUser, User, LoginResponse } from '@/app/utils/api';
+import { loginUser } from '@/app/utils/api';
+import { User, LoginResponse } from '@/app/types/loginRegister';
 
 export default function LoginForm(): React.ReactNode {
 	const [formData, setFormData] = useState<User>({

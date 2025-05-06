@@ -62,8 +62,8 @@ const eslintConfig = [
 				'error',
 				{
 					variableDeclaration: true,
-					parameter: true,
-					arrowParameter: true,
+					parameter: false,
+					arrowParameter: false,
 					propertyDeclaration: true,
 					memberVariableDeclaration: true,
 				},

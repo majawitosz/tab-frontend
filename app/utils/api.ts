@@ -1,32 +1,15 @@
 /** @format */
 
-const API_URL: string = 'http://127.0.0.1:8000/api'; // This is the URL to your Django Ninja backend
+import {
+	User,
+	LoginUser,
+	RegisterResponse,
+	LoginResponse,
+	ErrorResponse,
+} from '@/app/types/loginRegister';
+import { Dish } from '@/app/types/dish';
 
-export interface User {
-	username: string;
-	password: string;
-	email?: string;
-}
-
-export interface LoginUser {
-	username: string;
-	password: string;
-}
-
-export interface RegisterResponse {
-	username: string;
-	email: string;
-	is_authenticated: boolean;
-}
-
-export interface LoginResponse {
-	username: string;
-	refresh: string;
-	access: string;
-}
-export interface ErrorResponse {
-	detail: string;
-}
+const API_URL: string = 'https://Tab.garbatamalpa.com/api';
 
 export async function registerUser(user: User): Promise<RegisterResponse> {
 	const response: Response = await fetch(`${API_URL}/register`, {
@@ -34,18 +17,16 @@ export async function registerUser(user: User): Promise<RegisterResponse> {
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify(user), // Convert the user object to JSON
+		body: JSON.stringify(user),
 	});
 
 	if (!response.ok) {
-		// Handle errors (e.g., username already exists, email already exists)
 		const errorData: ErrorResponse = await response.json();
 		throw new Error(errorData.detail || 'Failed to register user');
 	}
 
-	return response.json(); // Parse the response as JSON
+	return response.json();
 }
-
 export async function loginUser(user: LoginUser): Promise<LoginResponse> {
 	const response: Response = await fetch(`${API_URL}/token/pair`, {
 		method: 'POST',
@@ -54,20 +35,24 @@ export async function loginUser(user: LoginUser): Promise<LoginResponse> {
 		},
 		body: JSON.stringify(user),
 	});
-	//const data = await response.json();
-	//console.log(data);
+
 	if (!response.ok) {
 		const errorData: ErrorResponse = await response.json();
 		throw new Error(errorData.detail || 'Invalid credentials');
 	}
 
-	return response.json(); // Expecting { access, refresh } tokens from Ninja JWT
+	return response.json();
 }
 
-// export async function fetchItems(): Promise<User[]> {
-// 	const response = await fetch(`${API_URL}/users`);
-// 	if (!response.ok) {
-// 		throw new Error('Failed to fetch items');
-// 	}
-// 	return response.json();
-// }
+export async function fetchDishes(): Promise<Dish[]> {
+	const response: Response = await fetch(`${API_URL}/dania`, {
+		cache: 'no-store',
+	});
+
+	if (!response.ok) {
+		const errorData: ErrorResponse = await response.json();
+		throw new Error(errorData.detail || 'Failed to fetch dishes');
+	}
+
+	return response.json();
+}

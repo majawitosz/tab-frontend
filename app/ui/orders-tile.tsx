@@ -1,8 +1,8 @@
 'use client';
 import { JSX, useState } from 'react';
-import { DishesType, OrdersData, OrdersDataTypes } from './ordersData';
+import { DishesType, OrdersData, OrdersDataTypes } from '@/app/types/order';
 
-export function OrdersPage(): JSX.Element {
+export function OrdersTile(): JSX.Element {
 	const [orders, setOrders] = useState<OrdersDataTypes[]>(OrdersData);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [newOrder, setNewOrder] = useState<
@@ -258,5 +258,4 @@ export function OrdersPage(): JSX.Element {
 	);
 }
 
-// Eksport komponentu
-export default OrdersPage;
+export default OrdersTile;
