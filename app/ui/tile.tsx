@@ -1,6 +1,7 @@
 'use client';
 import { JSX, useState } from 'react';
 import Image from 'next/image';
+import { useCart } from '@/app/ui/cart';
 
 interface TileProps {
 	name: string;
@@ -21,6 +22,17 @@ export function Tile({
 }: TileProps): JSX.Element {
 	const [isOpen, setIsOpen] = useState(false);
 	const [imageError, setImageError] = useState(false);
+	const { addToCart } = useCart();
+
+	const handleAddToOrder: () => void = () => {
+		addToCart({
+			dishId: Math.random(),
+			dishName: name,
+			quantity: 1,
+			price,
+		});
+		console.log(`Added ${name} to cart`);
+	};
 
 	// Toggle dropdown visibility
 	const toggleDropdown: () => void = (): void => {
@@ -67,6 +79,24 @@ export function Tile({
 					</h3>
 					<p className='text-xs text-gray-500'>{category}</p>
 				</div>
+				{/* Add to order button */}
+				<button
+					onClick={(e) => {
+						e.stopPropagation(); // Prevent dropdown toggle
+						handleAddToOrder();
+					}}
+					className='flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600'
+					aria-label={`Add ${name} to order`}
+				>
+					<svg
+						xmlns='http://www.w3.org/2000/svg'
+						viewBox='0 0 24 24'
+						fill='currentColor'
+						className='h-5 w-5'
+					>
+						<path d='M12 5c.552 0 1 .448 1 1v5h5c.552 0 1 .448 1 1s-.448 1-1 1h-5v5c0 .552-.448 1-1 1s-1-.448-1-1v-5H6c-.552 0-1-.448-1-1s.448-1 1-1h5V6c0-.552.448-1 1-1z' />
+					</svg>
+				</button>
 			</div>
 
 			{isOpen && (

@@ -3,6 +3,8 @@
 import type { Metadata } from 'next';
 import { geistSans, geistMono } from '@/app/ui/fonts';
 import '@/app/ui/globals.css';
+import { CartProvider } from '@/app/ui/cart';
+import { CartDisplay } from '@/app/ui/cart-display';
 
 export const metadata: Metadata = {
 	title: 'Create Next App',
@@ -19,7 +21,14 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				{children}
+				<CartProvider>
+					<div className='flex'>
+						<div className='flex-1'>{children}</div>
+						<div className='w-1/5 border-l border-gray-300 bg-gray-100 p-4'>
+							<CartDisplay />
+						</div>
+					</div>
+				</CartProvider>
 			</body>
 		</html>
 	);
