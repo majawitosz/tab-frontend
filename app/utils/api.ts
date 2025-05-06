@@ -45,7 +45,7 @@ export async function loginUser(user: LoginUser): Promise<LoginResponse> {
 }
 
 export async function fetchDishes(): Promise<Dish[]> {
-	const response: Response = await fetch(`${API_URL}/dania`, {
+	const response: Response = await fetch(`${API_URL}/dania/dania`, {
 		cache: 'no-store',
 	});
 
