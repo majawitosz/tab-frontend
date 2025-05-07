@@ -30,15 +30,15 @@ export function CartDisplay(): JSX.Element {
 		}));
 
 		const order: OrdersDataTypes = {
-			id: Date.now(), // Tymczasowe ID (może być generowane przez backend)
 			tableId: tableNumber,
+			totalPrice: totalPrice,
 			createdAt: new Date(),
-			updatedAt: new Date(),
 			notes,
 			dishes,
 		};
 
 		try {
+			console.log('Order submitted:', order); // Debugging line
 			await submitOrder(order);
 			alert('Order completed successfully!');
 			clearCart();

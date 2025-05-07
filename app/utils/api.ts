@@ -11,7 +11,8 @@ import { Dish } from '@/app/types/dish';
 import { NextResponse } from 'next/server';
 import { OrdersDataTypes } from '@/app/types/order';
 
-const API_URL: string = 'https://Tab.garbatamalpa.com/api';
+//const API_URL: string = 'https://Tab.garbatamalpa.com/api';
+const API_URL: string = 'http://localhost:8000/api';
 
 export async function registerUser(user: User): Promise<RegisterResponse> {
 	const response: Response = await fetch(`${API_URL}/users/register`, {
@@ -72,7 +73,7 @@ export async function fetchDishes(): Promise<Dish[]> {
 }
 
 export async function submitOrder(order: OrdersDataTypes): Promise<void> {
-	const response: Response = await fetch(`${API_URL}/orders`, {
+	const response: Response = await fetch(`${API_URL}/dania/orders`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
