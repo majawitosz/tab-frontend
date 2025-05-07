@@ -9,8 +9,9 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import React, { useState } from 'react';
-import { loginUser } from '@/app/utils/api';
-import { User, LoginResponse } from '@/app/types/loginRegister';
+
+import { User } from '@/app/types/loginRegister';
+import { useUser } from '../context/UserContext';
 
 export default function LoginForm(): React.ReactNode {
 	const [formData, setFormData] = useState<User>({
@@ -19,6 +20,7 @@ export default function LoginForm(): React.ReactNode {
 	});
 	const [message, setMessage] = useState<string>('');
 	const [error, setError] = useState<string>('');
+	const { setUsername } = useUser();
 
 	const handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void = (
 		e: React.ChangeEvent<HTMLInputElement>
@@ -37,9 +39,25 @@ export default function LoginForm(): React.ReactNode {
 		setError('');
 
 		try {
-			const response: LoginResponse = await loginUser(formData);
-			setMessage(`User ${response.username} registered successfully!`);
+			const response: Response = await fetch('/api/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData),
+			});
+
+			const data: { username: string; detail?: string } =
+				await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.detail || 'Invalid credentials');
+			}
+
+			setMessage(`Logged in as ${data.username}!`);
 			setFormData({ password: '', username: '' });
+			setUsername(data.username);
+			window.location.href = '/dashboard';
 		} catch (err: unknown) {
 			setError(
 				err instanceof Error

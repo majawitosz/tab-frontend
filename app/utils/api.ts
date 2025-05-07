@@ -8,11 +8,12 @@ import {
 	ErrorResponse,
 } from '@/app/types/loginRegister';
 import { Dish } from '@/app/types/dish';
+import { NextResponse } from 'next/server';
 
 const API_URL: string = 'https://Tab.garbatamalpa.com/api';
 
 export async function registerUser(user: User): Promise<RegisterResponse> {
-	const response: Response = await fetch(`${API_URL}/register`, {
+	const response: Response = await fetch(`${API_URL}/users/register`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -27,8 +28,9 @@ export async function registerUser(user: User): Promise<RegisterResponse> {
 
 	return response.json();
 }
+
 export async function loginUser(user: LoginUser): Promise<LoginResponse> {
-	const response: Response = await fetch(`${API_URL}/token/pair`, {
+	const response: Response = await fetch(`${API_URL}/users/token/pair`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -41,11 +43,22 @@ export async function loginUser(user: LoginUser): Promise<LoginResponse> {
 		throw new Error(errorData.detail || 'Invalid credentials');
 	}
 
-	return response.json();
+	const data: LoginResponse = await response.json();
+	// Set the token in cookies
+	const res: NextResponse<LoginResponse> = NextResponse.json(data);
+	res.cookies.set('accessToken', data.access, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === 'production',
+		sameSite: 'strict',
+		maxAge: 30, // 1 hour expiration 3600
+		path: '/',
+	});
+
+	return data;
 }
 
 export async function fetchDishes(): Promise<Dish[]> {
-	const response: Response = await fetch(`${API_URL}/dania`, {
+	const response: Response = await fetch(`${API_URL}/dania/dania`, {
 		cache: 'no-store',
 	});
 
