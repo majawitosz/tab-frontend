@@ -3,6 +3,8 @@
 import { JSX, useState } from 'react';
 import { useCart } from '@/app/ui/cart';
 import { Button } from '@/app/ui/button';
+import { OrdersDataTypes, DishesType } from '@/app/types/order';
+import { submitOrder } from '../utils/api';
 
 export function CartDisplay(): JSX.Element {
 	const { cart, clearCart } = useCart();
@@ -14,20 +16,38 @@ export function CartDisplay(): JSX.Element {
 		0
 	);
 
-	const handleCompleteOrder: () => void = () => {
+	const handleCompleteOrder: () => void = async () => {
 		if (cart.length === 0) {
 			alert('Your cart is empty!');
 			return;
 		}
 
-		console.log('Order completed with notes:', notes);
-		console.log('Order details:', cart);
-		console.log('Table number:', tableNumber);
+		// Mapowanie danych z koszyka na format OrdersDataTypes
+		const dishes: DishesType[] = cart.map((item) => ({
+			dishId: item.dishId,
+			dishName: item.dishName,
+			quantity: item.quantity,
+		}));
 
-		clearCart();
-		setNotes('');
-		setTableNumber(1);
-		alert('Order completed successfully!');
+		const order: OrdersDataTypes = {
+			id: Date.now(), // Tymczasowe ID (może być generowane przez backend)
+			tableId: tableNumber,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			notes,
+			dishes,
+		};
+
+		try {
+			await submitOrder(order);
+			alert('Order completed successfully!');
+			clearCart();
+			setNotes('');
+			setTableNumber(1);
+		} catch (error) {
+			console.error('Failed to submit order:', error);
+			alert('Failed to complete the order. Please try again.');
+		}
 	};
 
 	return (

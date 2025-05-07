@@ -9,6 +9,7 @@ import {
 } from '@/app/types/loginRegister';
 import { Dish } from '@/app/types/dish';
 import { NextResponse } from 'next/server';
+import { OrdersDataTypes } from '@/app/types/order';
 
 const API_URL: string = 'https://Tab.garbatamalpa.com/api';
 
@@ -68,4 +69,19 @@ export async function fetchDishes(): Promise<Dish[]> {
 	}
 
 	return response.json();
+}
+
+export async function submitOrder(order: OrdersDataTypes): Promise<void> {
+	const response: Response = await fetch(`${API_URL}/orders`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(order),
+	});
+
+	if (!response.ok) {
+		const errorData: ErrorResponse = await response.json();
+		throw new Error(errorData.detail || 'Failed to submit order');
+	}
 }
