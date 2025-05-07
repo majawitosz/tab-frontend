@@ -1,6 +1,8 @@
 /** @format */
 
 import SideNav from '@/app/ui/dashboard/sidenav';
+import { CartProvider } from '@/app/ui/cart';
+import { CartDisplay } from '@/app/ui/cart-display';
 
 export default function Layout({
 	children,
@@ -8,13 +10,18 @@ export default function Layout({
 	children: React.ReactNode;
 }): React.ReactNode {
 	return (
-		<div className='flex h-screen flex-col md:flex-row md:overflow-hidden'>
-			<div className='w-full flex-none md:w-64'>
-				<SideNav />
+		<CartProvider>
+			<div className='flex h-screen flex-col md:flex-row md:overflow-hidden'>
+				<div className='w-full flex-none md:w-64'>
+					<SideNav />
+				</div>
+				<div className='flex-grow p-6 md:overflow-y-auto md:p-12'>
+					{children}
+				</div>
+				<div className='w-1/5 border-l border-gray-300 bg-gray-100 p-4'>
+					<CartDisplay />
+				</div>
 			</div>
-			<div className='flex-grow p-6 md:overflow-y-auto md:p-12'>
-				{children}
-			</div>
-		</div>
+		</CartProvider>
 	);
 }
