@@ -73,10 +73,17 @@ export async function fetchDishesFromMenu(): Promise<Dish[]> {
 	return response.json();
 }
 
-export async function fetchDishesFromOrder(): Promise<OrdersDataResponse[]> {
-	// i tu tez osobny endpoint na pobranie z dania_order
-	const response: Response = await fetch(`${API_URL}/dania/dania`, {
+export async function fetchDishesFromOrder(
+	accessToken?: string
+): Promise<OrdersDataResponse[]> {
+	const headers: HeadersInit = {};
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
+	const response: Response = await fetch(`${API_URL}/dania/orders`, {
 		cache: 'no-store',
+		headers,
 	});
 
 	if (!response.ok) {
@@ -95,7 +102,6 @@ export async function submitOrder(
 		'Content-Type': 'application/json',
 	};
 
-	// Add Authorization header if token is provided
 	if (accessToken) {
 		headers['Authorization'] = `Bearer ${accessToken}`;
 	}

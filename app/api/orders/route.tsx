@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { submitOrder } from '@/app/utils/api';
-import { OrdersData } from '@/app/types/order';
+import { fetchDishesFromOrder, submitOrder } from '@/app/utils/api';
+import { OrdersData, OrdersDataResponse } from '@/app/types/order';
 import { getAccessToken } from '@/app/utils/auth';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -31,6 +31,37 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 					err instanceof Error
 						? err.message
 						: 'Failed to submit order',
+			},
+			{ status: 400 }
+		);
+	}
+}
+
+export async function GET(): Promise<NextResponse> {
+	try {
+		// Get the access token from cookies
+		const accessToken: string | undefined = await getAccessToken();
+
+		if (!accessToken) {
+			return NextResponse.json(
+				{ detail: 'Unauthorized: No access token found' },
+				{ status: 401 }
+			);
+		}
+
+		// Fetch orders with the token
+		const orders: OrdersDataResponse[] =
+			await fetchDishesFromOrder(accessToken);
+
+		return NextResponse.json(orders, { status: 200 });
+	} catch (err: unknown) {
+		console.error('Error in /api/fetch-orders:', err);
+		return NextResponse.json(
+			{
+				detail:
+					err instanceof Error
+						? err.message
+						: 'Failed to fetch orders',
 			},
 			{ status: 400 }
 		);
