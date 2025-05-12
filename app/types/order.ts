@@ -12,7 +12,7 @@ export type Dish = {
 	category: string;
 	is_available: boolean;
 	is_visible: boolean;
-	image_url: string | null;
+	image_url?: string;
 	allergens: Allergen[];
 	quantity?: number;
 };
