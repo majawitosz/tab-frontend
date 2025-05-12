@@ -6,6 +6,7 @@ import {
 	RegisterResponse,
 	LoginResponse,
 	ErrorResponse,
+	HeadersInit,
 } from '@/app/types/loginRegister';
 import { Dish, OrdersDataResponse } from '@/app/types/order';
 import { NextResponse } from 'next/server';
@@ -72,10 +73,17 @@ export async function fetchDishesFromMenu(): Promise<Dish[]> {
 	return response.json();
 }
 
-export async function fetchDishesFromOrder(): Promise<OrdersDataResponse[]> {
-	// i tu tez osobny endpoint na pobranie z dania_order
-	const response: Response = await fetch(`${API_URL}/dania/dania`, {
+export async function fetchDishesFromOrder(
+	accessToken?: string
+): Promise<OrdersDataResponse[]> {
+	const headers: HeadersInit = {};
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
+	const response: Response = await fetch(`${API_URL}/dania/orders`, {
 		cache: 'no-store',
+		headers,
 	});
 
 	if (!response.ok) {
@@ -86,16 +94,23 @@ export async function fetchDishesFromOrder(): Promise<OrdersDataResponse[]> {
 	return response.json();
 }
 
-export async function submitOrder(order: OrdersData): Promise<void> {
-	//tu nie dania/dania tylko osobny nedpoint na dodanie zamwienia nowego czyli do innej tabeli dania_order
-	const response: Response = await fetch(`${API_URL}/dania/dania`, {
+export async function submitOrder(
+	order: OrdersData,
+	accessToken?: string
+): Promise<void> {
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+	};
+
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
+	const response: Response = await fetch(`${API_URL}/dania/orders`, {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
+		headers,
 		body: JSON.stringify(order),
 	});
-
 	if (!response.ok) {
 		const errorData: ErrorResponse = await response.json();
 		throw new Error(errorData.detail || 'Failed to submit order');

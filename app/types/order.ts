@@ -10,9 +10,9 @@ export type Dish = {
 	description: string;
 	price: number;
 	category: string;
-	is_available: boolean;
-	is_visible: boolean;
-	image_url?: string;
+	is_available?: boolean;
+	is_visible?: boolean;
+	image_url?: string | null;
 	allergens: Allergen[];
 	quantity?: number;
 };
@@ -21,7 +21,7 @@ export interface OrdersData {
 	tableId: number;
 	createdAt: Date;
 	totalPrice: number;
-	notes: string;
+	notes?: string;
 	dishes: Dish[];
 }
 export interface OrdersDataResponse {

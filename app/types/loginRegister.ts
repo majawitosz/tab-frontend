@@ -23,3 +23,5 @@ export interface LoginResponse {
 export interface ErrorResponse {
 	detail: string;
 }
+
+export type HeadersInit = [string, string][] | Record<string, string> | Headers;

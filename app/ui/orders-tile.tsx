@@ -1,7 +1,6 @@
 'use client';
 import { JSX, useEffect, useState } from 'react';
 import { OrdersDataResponse, Dish } from '@/app/types/order';
-import { fetchDishesFromOrder } from '@/app/utils/api';
 
 export function OrdersTile(): JSX.Element {
 	const [orders, setOrders] = useState<OrdersDataResponse[]>([]);
@@ -11,8 +10,23 @@ export function OrdersTile(): JSX.Element {
 	useEffect(() => {
 		const fetchOrders: () => Promise<void> = async () => {
 			try {
+				const response: Response = await fetch('/api/orders', {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+
+				if (!response.ok) {
+					const errorData: { detail?: string } =
+						await response.json();
+					throw new Error(
+						errorData.detail || 'Failed to fetch orders'
+					);
+				}
+
 				const fetchedOrders: OrdersDataResponse[] =
-					await fetchDishesFromOrder();
+					await response.json();
 				setOrders(fetchedOrders);
 				setError(null);
 			} catch (err) {
@@ -27,7 +41,7 @@ export function OrdersTile(): JSX.Element {
 		};
 
 		fetchOrders();
-	}, []); // Empty dependency array to fetch once on mount
+	}, []);
 
 	if (loading) {
 		return (
@@ -57,14 +71,20 @@ export function OrdersTile(): JSX.Element {
 					>
 						<h3 className='text-lg font-semibold'>{`TABLE: ${order.tableId}, ORDER ID: ${order.id}`}</h3>
 						<ul className='text-sm text-gray-600'>
-							{order.dishes.map((dish: Dish, index: number) => (
-								<li
-									key={index}
-								>{`Dish: ${dish.name}, Quantity: ${dish.quantity || 0}`}</li>
-							))}
+							{order.dishes && order.dishes.length > 0 ? (
+								order.dishes.map(
+									(dish: Dish, index: number) => (
+										<li
+											key={index}
+										>{`Dish: ${dish.name}, Quantity: ${dish.quantity || 0}`}</li>
+									)
+								)
+							) : (
+								<li>No dishes available</li>
+							)}
 						</ul>
-						<p className='text-sm text-gray-600'>{`Notes: ${order.notes}`}</p>
-						<p className='text-sm text-gray-600'>{`Date: ${order.createdAt.toLocaleString()}`}</p>
+						<p className='text-sm text-gray-600'>{`Notes: ${order?.notes}`}</p>
+						<p className='text-sm text-gray-600'>{`Date: ${order.createdAt?.toLocaleString()}`}</p>
 					</div>
 				))}
 			</div>

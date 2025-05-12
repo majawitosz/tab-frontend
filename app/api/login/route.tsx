@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loginUser } from '@/app/utils/api';
 import { LoginUser, LoginResponse } from '@/app/types/loginRegister';
+import { setAccessToken } from '@/app/utils/auth';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
 	try {
@@ -16,13 +17,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			{ status: 200 }
 		);
 
-		res.cookies.set('accessToken', response.access, {
-			httpOnly: true,
-			path: '/',
-			maxAge: 3600, // 1 hour
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict',
-		});
+		await setAccessToken(response.access);
 
 		return res;
 	} catch (err: Error | unknown) {
