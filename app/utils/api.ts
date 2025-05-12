@@ -7,12 +7,12 @@ import {
 	LoginResponse,
 	ErrorResponse,
 } from '@/app/types/loginRegister';
-import { Dish } from '@/app/types/dish';
+import { Dish, OrdersDataResponse } from '@/app/types/order';
 import { NextResponse } from 'next/server';
-import { OrdersDataTypes } from '@/app/types/order';
+import { OrdersData } from '@/app/types/order';
 
-//const API_URL: string = 'https://Tab.garbatamalpa.com/api';
-const API_URL: string = 'http://localhost:8000/api';
+const API_URL: string = 'https://Tab.garbatamalpa.com/api';
+//const API_URL: string = 'http://localhost:8000/api';
 
 export async function registerUser(user: User): Promise<RegisterResponse> {
 	const response: Response = await fetch(`${API_URL}/users/register`, {
@@ -59,7 +59,7 @@ export async function loginUser(user: LoginUser): Promise<LoginResponse> {
 	return data;
 }
 
-export async function fetchDishes(): Promise<Dish[]> {
+export async function fetchDishesFromMenu(): Promise<Dish[]> {
 	const response: Response = await fetch(`${API_URL}/dania/dania`, {
 		cache: 'no-store',
 	});
@@ -72,8 +72,23 @@ export async function fetchDishes(): Promise<Dish[]> {
 	return response.json();
 }
 
-export async function submitOrder(order: OrdersDataTypes): Promise<void> {
-	const response: Response = await fetch(`${API_URL}/dania/orders`, {
+export async function fetchDishesFromOrder(): Promise<OrdersDataResponse[]> {
+	// i tu tez osobny endpoint na pobranie z dania_order
+	const response: Response = await fetch(`${API_URL}/dania/dania`, {
+		cache: 'no-store',
+	});
+
+	if (!response.ok) {
+		const errorData: ErrorResponse = await response.json();
+		throw new Error(errorData.detail || 'Failed to fetch dishes');
+	}
+
+	return response.json();
+}
+
+export async function submitOrder(order: OrdersData): Promise<void> {
+	//tu nie dania/dania tylko osobny nedpoint na dodanie zamwienia nowego czyli do innej tabeli dania_order
+	const response: Response = await fetch(`${API_URL}/dania/dania`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

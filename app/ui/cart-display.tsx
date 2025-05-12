@@ -3,7 +3,7 @@
 import { JSX, useState } from 'react';
 import { useCart } from '@/app/ui/cart';
 import { Button } from '@/app/ui/button';
-import { OrdersDataTypes, DishesType } from '@/app/types/order';
+import { OrdersData } from '@/app/types/order';
 import { submitOrder } from '../utils/api';
 
 export function CartDisplay(): JSX.Element {
@@ -12,7 +12,7 @@ export function CartDisplay(): JSX.Element {
 	const [tableNumber, setTableNumber] = useState<number>(1);
 
 	const totalPrice: number = cart.reduce(
-		(sum, item) => sum + item.quantity * item.price,
+		(sum, item) => sum + (item.quantity || 0) * item.price,
 		0
 	);
 
@@ -22,19 +22,15 @@ export function CartDisplay(): JSX.Element {
 			return;
 		}
 
-		// Mapowanie danych z koszyka na format OrdersDataTypes
-		const dishes: DishesType[] = cart.map((item) => ({
-			dishId: item.dishId,
-			dishName: item.dishName,
-			quantity: item.quantity,
-		}));
-
-		const order: OrdersDataTypes = {
+		const order: OrdersData = {
 			tableId: tableNumber,
 			totalPrice: totalPrice,
 			createdAt: new Date(),
 			notes,
-			dishes,
+			dishes: cart.map((item) => ({
+				...item,
+				quantity: item.quantity || 0,
+			})),
 		};
 
 		try {
@@ -55,11 +51,14 @@ export function CartDisplay(): JSX.Element {
 			<h2 className='text-lg font-bold'>Cart</h2>
 			<ul className='space-y-2'>
 				{cart.map((item) => (
-					<li key={item.dishId} className='flex justify-between'>
+					<li key={item.id} className='flex justify-between'>
 						<span>
-							{item.dishName} - ${item.price.toFixed(2)}
+							{item.name} (x{item.quantity || 0}) - $
+							{item.price.toFixed(2)}
 						</span>
-						<span>${item.price.toFixed(2)}</span>
+						<span>
+							${((item.quantity || 0) * item.price).toFixed(2)}
+						</span>
 					</li>
 				))}
 			</ul>

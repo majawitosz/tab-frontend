@@ -1,17 +1,11 @@
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
-
-interface CartItem {
-	dishId: number;
-	dishName: string;
-	quantity: number;
-	price: number;
-}
+import { Dish } from '@/app/types/order'; // Import the new Dish type
 
 interface CartContextType {
-	cart: CartItem[];
-	addToCart: (dish: CartItem) => void;
+	cart: Dish[];
+	addToCart: (dish: Dish) => void;
 	removeFromCart: (dishId: number) => void;
 	clearCart: () => void;
 }
@@ -23,17 +17,17 @@ const CartContext: React.Context<CartContextType | undefined> = createContext<
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
-	const [cart, setCart] = useState<CartItem[]>([]);
+	const [cart, setCart] = useState<Dish[]>([]);
 
-	const addToCart: (dish: CartItem) => void = (dish) => {
+	const addToCart: (dish: Dish) => void = (dish) => {
 		setCart((prevCart) => {
-			const existingItem: CartItem | undefined = prevCart.find(
-				(item) => item.dishId === dish.dishId
+			const existingItem: Dish | undefined = prevCart.find(
+				(item) => item.id === dish.id
 			);
 			if (existingItem) {
 				return prevCart.map((item) =>
-					item.dishId === dish.dishId
-						? { ...item, quantity: item.quantity + 1 }
+					item.id === dish.id
+						? { ...item, quantity: (item.quantity || 0) + 1 }
 						: item
 				);
 			}
@@ -42,9 +36,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 	};
 
 	const removeFromCart: (dishId: number) => void = (dishId) => {
-		setCart((prevCart) =>
-			prevCart.filter((item) => item.dishId !== dishId)
-		);
+		setCart((prevCart) => prevCart.filter((item) => item.id !== dishId));
 	};
 
 	const clearCart: () => void = () => {

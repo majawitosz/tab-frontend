@@ -1,37 +1,34 @@
-export type Order = {
+export type Allergen = {
 	id: number;
-	dishId: number;
-	dishName: string;
-	quantity: number;
-	createdAt: Date;
-	updatedAt: Date;
-	tableId: number;
-	pic?: string;
+	name: string;
+	description: string;
 };
 
-export interface DishesType {
-	dishId: number;
-	dishName: string;
-	quantity: number;
-}
+export type Dish = {
+	id: number;
+	name: string;
+	description: string;
+	price: number;
+	category: string;
+	is_available: boolean;
+	is_visible: boolean;
+	image_url: string | null;
+	allergens: Allergen[];
+	quantity?: number;
+};
 
-export interface OrdersDataTypes {
+export interface OrdersData {
 	tableId: number;
 	createdAt: Date;
 	totalPrice: number;
 	notes: string;
-	dishes: DishesType[];
+	dishes: Dish[];
 }
-
-export const OrdersData: OrdersDataTypes[] = [
-	{
-		tableId: 2,
-		createdAt: new Date(),
-		totalPrice: 25.5,
-		dishes: [
-			{ dishId: 1, dishName: 'Pizza', quantity: 2 },
-			{ dishId: 2, dishName: 'Pasta', quantity: 1 },
-		],
-		notes: '',
-	},
-];
+export interface OrdersDataResponse {
+	id: number;
+	tableId: number;
+	createdAt: Date;
+	totalPrice: number;
+	notes: string;
+	dishes: Dish[];
+}
