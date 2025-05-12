@@ -21,7 +21,7 @@ export interface OrdersData {
 	tableId: number;
 	createdAt: Date;
 	totalPrice: number;
-	notes: string;
+	notes?: string;
 	dishes: Dish[];
 }
 export interface OrdersDataResponse {
