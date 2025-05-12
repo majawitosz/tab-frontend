@@ -6,6 +6,7 @@ import {
 	RegisterResponse,
 	LoginResponse,
 	ErrorResponse,
+	HeadersInit,
 } from '@/app/types/loginRegister';
 import { Dish, OrdersDataResponse } from '@/app/types/order';
 import { NextResponse } from 'next/server';
@@ -86,16 +87,24 @@ export async function fetchDishesFromOrder(): Promise<OrdersDataResponse[]> {
 	return response.json();
 }
 
-export async function submitOrder(order: OrdersData): Promise<void> {
-	//tu nie dania/dania tylko osobny nedpoint na dodanie zamwienia nowego czyli do innej tabeli dania_order
-	const response: Response = await fetch(`${API_URL}/dania/dania`, {
+export async function submitOrder(
+	order: OrdersData,
+	accessToken?: string
+): Promise<void> {
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+	};
+
+	// Add Authorization header if token is provided
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
+	const response: Response = await fetch(`${API_URL}/dania/orders`, {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
+		headers,
 		body: JSON.stringify(order),
 	});
-
 	if (!response.ok) {
 		const errorData: ErrorResponse = await response.json();
 		throw new Error(errorData.detail || 'Failed to submit order');

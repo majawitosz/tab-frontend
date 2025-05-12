@@ -4,7 +4,6 @@ import { JSX, useState } from 'react';
 import { useCart } from '@/app/ui/cart';
 import { Button } from '@/app/ui/button';
 import { OrdersData } from '@/app/types/order';
-import { submitOrder } from '../utils/api';
 
 export function CartDisplay(): JSX.Element {
 	const { cart, clearCart } = useCart();
@@ -35,7 +34,19 @@ export function CartDisplay(): JSX.Element {
 
 		try {
 			console.log('Order submitted:', order); // Debugging line
-			await submitOrder(order);
+			const response: Response = await fetch('/api/orders', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(order),
+			});
+
+			if (!response.ok) {
+				const errorData: { detail?: string } = await response.json();
+				throw new Error(errorData.detail || 'Failed to submit order');
+			}
+
 			alert('Order completed successfully!');
 			clearCart();
 			setNotes('');
