@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
 
+import { deleteAccessToken } from '@/app/utils/auth';
+
 export async function POST(): Promise<NextResponse> {
 	const res: NextResponse = NextResponse.json(
 		{ message: 'Logged out successfully' },
 		{ status: 200 }
 	);
-	res.cookies.set('accessToken', '', {
-		httpOnly: true,
-		path: '/',
-		maxAge: 0,
-		secure: process.env.NODE_ENV === 'production',
-		sameSite: 'strict',
-	});
+	await deleteAccessToken();
 	return res;
 }

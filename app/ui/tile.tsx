@@ -2,46 +2,29 @@
 import { JSX, useState } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/app/ui/cart';
+import { Dish } from '@/app/types/order';
+import fallback from '@/app/images/fallback.jpg'; // Adjust the path as necessary
 
 interface TileProps {
-	name: string;
-	desc?: string;
-	pic?: string;
-	allergens?: string[];
-	price: number;
-	category: string;
+	dish: Dish; // Use the full Dish type
 }
 
-export function Tile({
-	name,
-	desc,
-	pic,
-	allergens,
-	price,
-	category,
-}: TileProps): JSX.Element {
+export function Tile({ dish }: TileProps): JSX.Element {
 	const [isOpen, setIsOpen] = useState(false);
-	const [imageError, setImageError] = useState(false);
+
 	const { addToCart } = useCart();
 
 	const handleAddToOrder: () => void = () => {
 		addToCart({
-			dishId: Math.random(),
-			dishName: name,
-			quantity: 1,
-			price,
+			...dish,
+			quantity: 1, // Add quantity for cart
 		});
-		console.log(`Added ${name} to cart`);
+		console.log(`Added ${dish.name} to cart`);
 	};
 
 	// Toggle dropdown visibility
 	const toggleDropdown: () => void = (): void => {
 		setIsOpen((prev: boolean) => !prev);
-	};
-
-	// Handle image loading error
-	const handleImageError: () => void = () => {
-		setImageError(true); // Set image error state if image fails
 	};
 
 	return (
@@ -51,14 +34,13 @@ export function Tile({
 				className='flex cursor-pointer items-center gap-4'
 			>
 				<div className='relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-gray-100'>
-					{pic && !imageError ? (
+					{dish.image_url ? (
 						<Image
-							src={pic}
-							alt={name}
+							src={fallback}
+							alt={dish.name}
 							width={48}
 							height={48}
 							className='object-cover'
-							onError={handleImageError} // Handle image loading error
 						/>
 					) : (
 						<svg
@@ -72,12 +54,12 @@ export function Tile({
 				</div>
 				<div className='flex-1'>
 					<h3 className='text-lg font-semibold text-gray-800'>
-						{name}{' '}
+						{dish.name}{' '}
 						<span className='text-sm text-gray-500'>
-							(${price.toFixed(2)})
+							(${dish.price.toFixed(2)})
 						</span>
 					</h3>
-					<p className='text-xs text-gray-500'>{category}</p>
+					<p className='text-xs text-gray-500'>{dish.category}</p>
 				</div>
 				{/* Add to order button */}
 				<button
@@ -86,7 +68,7 @@ export function Tile({
 						handleAddToOrder();
 					}}
 					className='flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600'
-					aria-label={`Add ${name} to order`}
+					aria-label={`Add ${dish.name} to order`}
 				>
 					<svg
 						xmlns='http://www.w3.org/2000/svg'
@@ -101,10 +83,14 @@ export function Tile({
 
 			{isOpen && (
 				<div className='space-y-2 rounded-xl border border-gray-200 bg-gray-50 p-4'>
-					{desc && <p className='text-sm text-gray-600'>{desc}</p>}
+					{dish.description && (
+						<p className='text-sm text-gray-600'>
+							{dish.description}
+						</p>
+					)}
 
 					{/* Display allergens if available */}
-					{allergens && allergens.length > 0 && (
+					{dish.allergens && dish.allergens.length > 0 && (
 						<div className='rounded-md border border-red-200 bg-red-50 p-3'>
 							<div className='mb-2 flex items-center gap-2'>
 								<svg
@@ -119,8 +105,8 @@ export function Tile({
 								</span>
 							</div>
 							<ul className='list-disc pl-5 text-sm text-red-600'>
-								{allergens.map((a: string, i: number) => (
-									<li key={i}>{a}</li>
+								{dish.allergens.map((a, i) => (
+									<li key={i}>{a.name}</li>
 								))}
 							</ul>
 						</div>

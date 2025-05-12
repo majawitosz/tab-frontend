@@ -6,11 +6,14 @@ import {
 	RegisterResponse,
 	LoginResponse,
 	ErrorResponse,
+	HeadersInit,
 } from '@/app/types/loginRegister';
-import { Dish } from '@/app/types/dish';
+import { Dish, OrdersDataResponse } from '@/app/types/order';
 import { NextResponse } from 'next/server';
+import { OrdersData } from '@/app/types/order';
 
 const API_URL: string = 'https://Tab.garbatamalpa.com/api';
+//const API_URL: string = 'http://localhost:8000/api';
 
 export async function registerUser(user: User): Promise<RegisterResponse> {
 	const response: Response = await fetch(`${API_URL}/users/register`, {
@@ -57,7 +60,7 @@ export async function loginUser(user: LoginUser): Promise<LoginResponse> {
 	return data;
 }
 
-export async function fetchDishes(): Promise<Dish[]> {
+export async function fetchDishesFromMenu(): Promise<Dish[]> {
 	const response: Response = await fetch(`${API_URL}/dania/dania`, {
 		cache: 'no-store',
 	});
@@ -68,4 +71,48 @@ export async function fetchDishes(): Promise<Dish[]> {
 	}
 
 	return response.json();
+}
+
+export async function fetchDishesFromOrder(
+	accessToken?: string
+): Promise<OrdersDataResponse[]> {
+	const headers: HeadersInit = {};
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
+	const response: Response = await fetch(`${API_URL}/dania/orders`, {
+		cache: 'no-store',
+		headers,
+	});
+
+	if (!response.ok) {
+		const errorData: ErrorResponse = await response.json();
+		throw new Error(errorData.detail || 'Failed to fetch dishes');
+	}
+
+	return response.json();
+}
+
+export async function submitOrder(
+	order: OrdersData,
+	accessToken?: string
+): Promise<void> {
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+	};
+
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
+	const response: Response = await fetch(`${API_URL}/dania/orders`, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(order),
+	});
+	if (!response.ok) {
+		const errorData: ErrorResponse = await response.json();
+		throw new Error(errorData.detail || 'Failed to submit order');
+	}
 }

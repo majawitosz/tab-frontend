@@ -3,6 +3,7 @@
 import { JSX, useState } from 'react';
 import { useCart } from '@/app/ui/cart';
 import { Button } from '@/app/ui/button';
+import { OrdersData } from '@/app/types/order';
 
 export function CartDisplay(): JSX.Element {
 	const { cart, clearCart } = useCart();
@@ -10,24 +11,50 @@ export function CartDisplay(): JSX.Element {
 	const [tableNumber, setTableNumber] = useState<number>(1);
 
 	const totalPrice: number = cart.reduce(
-		(sum, item) => sum + item.quantity * item.price,
+		(sum, item) => sum + (item.quantity || 0) * item.price,
 		0
 	);
 
-	const handleCompleteOrder: () => void = () => {
+	const handleCompleteOrder: () => void = async () => {
 		if (cart.length === 0) {
 			alert('Your cart is empty!');
 			return;
 		}
 
-		console.log('Order completed with notes:', notes);
-		console.log('Order details:', cart);
-		console.log('Table number:', tableNumber);
+		const order: OrdersData = {
+			tableId: tableNumber,
+			totalPrice: totalPrice,
+			createdAt: new Date(),
+			notes,
+			dishes: cart.map((item) => ({
+				...item,
+				quantity: item.quantity || 0,
+			})),
+		};
 
-		clearCart();
-		setNotes('');
-		setTableNumber(1);
-		alert('Order completed successfully!');
+		try {
+			console.log('Order submitted:', order); // Debugging line
+			const response: Response = await fetch('/api/orders', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(order),
+			});
+
+			if (!response.ok) {
+				const errorData: { detail?: string } = await response.json();
+				throw new Error(errorData.detail || 'Failed to submit order');
+			}
+
+			alert('Order completed successfully!');
+			clearCart();
+			setNotes('');
+			setTableNumber(1);
+		} catch (error) {
+			console.error('Failed to submit order:', error);
+			alert('Failed to complete the order. Please try again.');
+		}
 	};
 
 	return (
@@ -35,11 +62,14 @@ export function CartDisplay(): JSX.Element {
 			<h2 className='text-lg font-bold'>Cart</h2>
 			<ul className='space-y-2'>
 				{cart.map((item) => (
-					<li key={item.dishId} className='flex justify-between'>
+					<li key={item.id} className='flex justify-between'>
 						<span>
-							{item.dishName} - ${item.price.toFixed(2)}
+							{item.name} (x{item.quantity || 0}) - $
+							{item.price.toFixed(2)}
 						</span>
-						<span>${item.price.toFixed(2)}</span>
+						<span>
+							${((item.quantity || 0) * item.price).toFixed(2)}
+						</span>
 					</li>
 				))}
 			</ul>
