@@ -69,22 +69,31 @@ export function OrdersTile(): JSX.Element {
 						key={order.id}
 						className='rounded-lg bg-white p-4 shadow-md'
 					>
-						<h3 className='text-lg font-semibold'>{`TABLE: ${order.tableId}, ORDER ID: ${order.id}`}</h3>
+						<h3 className='text-lg font-semibold'>{`TABLE: ${order.table_number}, ORDER ID: ${order.id}`}</h3>
 						<ul className='text-sm text-gray-600'>
-							{order.dishes && order.dishes.length > 0 ? (
-								order.dishes.map(
-									(dish: Dish, index: number) => (
-										<li
-											key={index}
-										>{`Dish: ${dish.name}, Quantity: ${dish.quantity || 0}`}</li>
-									)
-								)
+							{order.items && order.items.length > 0 ? (
+								order.items.map((dish: Dish, index: number) => (
+									<li
+										key={index}
+									>{`Dish: ${dish.name}, Quantity: ${dish.quantity || 0}`}</li>
+								))
 							) : (
 								<li>No dishes available</li>
 							)}
 						</ul>
 						<p className='text-sm text-gray-600'>{`Notes: ${order?.notes}`}</p>
-						<p className='text-sm text-gray-600'>{`Date: ${order.createdAt?.toLocaleString()}`}</p>
+						<p className='text-sm text-gray-600'>
+							{`Date: ${new Date(order.created_at).toLocaleString(
+								'en-GB',
+								{
+									year: 'numeric',
+									month: '2-digit',
+									day: '2-digit',
+									hour: '2-digit',
+									minute: '2-digit',
+								}
+							)}`}
+						</p>
 					</div>
 				))}
 			</div>
