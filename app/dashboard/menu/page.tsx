@@ -4,6 +4,7 @@ import { useEffect, useState, JSX, ChangeEvent } from 'react';
 import { Tile } from '@/app/ui/tile';
 import { Dish } from '@/app/types/order';
 import { fetchDishesFromMenu } from '@/app/utils/api';
+import { ErrorResponse } from '@/app/types/loginRegister';
 
 export default function Page(): JSX.Element {
 	const [dishes, setDishes] = useState<Dish[]>([]);
@@ -12,9 +13,16 @@ export default function Page(): JSX.Element {
 	const [serverImages, setServerImages] = useState<string[]>([
 		'/images/sample1.jpg',
 		'/images/sample2.jpg',
-	]); // Simulated
+	]);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [formData, setFormData] = useState({
+		name: '',
+		category: '',
+		price: '',
+		description: '',
+		allergens: '',
+	});
 
 	useEffect(() => {
 		const loadDishes: () => Promise<void> = async () => {
@@ -40,11 +48,53 @@ export default function Page(): JSX.Element {
 
 	const handleUpload: () => void = () => {
 		if (!selectedFile) return;
-
-		// Simulate upload logic
 		const fakePath: string = `/uploads/${selectedFile.name}`;
 		setServerImages((prev) => [...prev, fakePath]);
 		setSelectedFile(null);
+	};
+
+	const handleChange: (
+		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => void = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleSubmit: () => Promise<void> = async () => {
+		try {
+			const dish: Dish = {
+				name: formData.name,
+				category: formData.category,
+				price: parseFloat(formData.price),
+				description: formData.description,
+				//image_url: selectedImage,
+				// allergens: formData.allergens.split(',').map((name) => ({
+				// 	id: 0,
+				// 	name: name.trim(),
+				// 	description: '',
+				// })),
+				is_available: true,
+				is_visible: true,
+			};
+
+			const res: Response = await fetch('/api/menu', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(dish),
+			});
+
+			if (!res.ok) {
+				const data: ErrorResponse = await res.json();
+				throw new Error(data.detail || 'Failed to create dish');
+			}
+
+			alert('Dish created successfully');
+			setShowForm(false);
+		} catch (err) {
+			alert(err instanceof Error ? err.message : 'Unexpected error');
+		}
 	};
 
 	return (
@@ -72,6 +122,9 @@ export default function Page(): JSX.Element {
 							</label>
 							<input
 								type='text'
+								name='name'
+								value={formData.name}
+								onChange={handleChange}
 								className='w-full rounded-md border p-2'
 								placeholder='Dish name'
 							/>
@@ -82,6 +135,9 @@ export default function Page(): JSX.Element {
 							</label>
 							<input
 								type='text'
+								name='category'
+								value={formData.category}
+								onChange={handleChange}
 								className='w-full rounded-md border p-2'
 								placeholder='e.g. Appetizer'
 							/>
@@ -93,13 +149,16 @@ export default function Page(): JSX.Element {
 							<input
 								type='number'
 								step='0.01'
+								name='price'
+								value={formData.price}
+								onChange={handleChange}
 								className='w-full rounded-md border p-2'
 								placeholder='0.00'
 							/>
 						</div>
 					</div>
 
-					{/* Upload section */}
+					{/* Upload Section */}
 					<div className='space-y-2'>
 						<label className='block text-sm text-gray-600'>
 							Select a Photo
@@ -160,6 +219,9 @@ export default function Page(): JSX.Element {
 						</label>
 						<textarea
 							rows={2}
+							name='description'
+							value={formData.description}
+							onChange={handleChange}
 							className='w-full rounded-md border p-2'
 							placeholder='Short description'
 						/>
@@ -171,6 +233,9 @@ export default function Page(): JSX.Element {
 						</label>
 						<input
 							type='text'
+							name='allergens'
+							value={formData.allergens}
+							onChange={handleChange}
 							className='w-full rounded-md border p-2'
 							placeholder='e.g. gluten, dairy'
 						/>
@@ -179,6 +244,7 @@ export default function Page(): JSX.Element {
 					<div className='pt-2 text-right'>
 						<button
 							type='button'
+							onClick={handleSubmit}
 							className='rounded-md bg-green-600 px-4 py-2 text-white transition hover:bg-green-700'
 						>
 							Send
