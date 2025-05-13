@@ -26,9 +26,9 @@ export interface OrdersData {
 }
 export interface OrdersDataResponse {
 	id: number;
-	tableId: number;
-	createdAt: Date;
-	totalPrice: number;
+	table_number: number;
+	created_at: Date;
+	total_amount: number;
 	notes: string;
-	dishes: Dish[];
+	items: Dish[];
 }
