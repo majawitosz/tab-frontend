@@ -1,6 +1,7 @@
 'use client';
 import { JSX, useEffect, useState } from 'react';
 import { OrdersDataResponse, Dish } from '@/app/types/order';
+import { ArchiveOrder } from './archive-order';
 
 export function OrdersTile(): JSX.Element {
 	const [orders, setOrders] = useState<OrdersDataResponse[]>([]);
@@ -42,6 +43,16 @@ export function OrdersTile(): JSX.Element {
 
 		fetchOrders();
 	}, []);
+
+	const handleStatusUpdate: (updatedOrder: OrdersDataResponse) => void = (
+		updatedOrder: OrdersDataResponse
+	): void => {
+		setOrders((prevOrders) =>
+			prevOrders.map((order) =>
+				order.id === updatedOrder.id ? updatedOrder : order
+			)
+		);
+	};
 
 	if (loading) {
 		return (
@@ -94,6 +105,11 @@ export function OrdersTile(): JSX.Element {
 								}
 							)}`}
 						</p>
+
+						<ArchiveOrder
+							order={order}
+							onStatusUpdate={handleStatusUpdate}
+						/>
 					</div>
 				))}
 			</div>
