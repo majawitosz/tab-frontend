@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { getAccessToken } from '@/app/utils/auth';
 import { OrdersDataResponse } from '@/app/types/order';
 const API_URL: string = 'https://Tab.garbatamalpa.com/api';
+//const API_URL: string = 'http://localhost:8000/api';
 
-export async function PATCH(request: Request): Promise<NextResponse> {
+export async function POST(request: Request): Promise<NextResponse> {
 	try {
 		const { orderId } = await request.json();
 
@@ -21,12 +22,13 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 		const backendResponse: Response = await fetch(
 			`${API_URL}/dania/orders/${orderId}/status`,
 			{
-				method: 'PATCH',
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${accessToken}`,
 				},
-				body: JSON.stringify({ status: 'Completed' }),
+				// Wysyłamy pusty body, ponieważ status będzie zmieniany po stronie backendu (w PyCharmie)
+				body: JSON.stringify({}),
 			}
 		);
 

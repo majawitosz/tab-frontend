@@ -28,6 +28,14 @@ export function OrdersTile(): JSX.Element {
 
 				const fetchedOrders: OrdersDataResponse[] =
 					await response.json();
+				// Sort orders so that active orders are on top
+				fetchedOrders.sort((a, b) => {
+					if (a.status === 'Active' && b.status !== 'Active')
+						return -1;
+					if (a.status !== 'Active' && b.status === 'Active')
+						return 1;
+					return 0;
+				});
 				setOrders(fetchedOrders);
 				setError(null);
 			} catch (err) {
@@ -93,6 +101,11 @@ export function OrdersTile(): JSX.Element {
 							)}
 						</ul>
 						<p className='text-sm text-gray-600'>{`Notes: ${order?.notes}`}</p>
+						<p
+							className={`text-sm ${order.status === 'Completed' ? 'text-red-600' : 'text-green-600'}`}
+						>
+							{`Status: ${order.status}`}
+						</p>
 						<p className='text-sm text-gray-600'>
 							{`Date: ${new Date(order.created_at).toLocaleString(
 								'en-GB',
@@ -105,11 +118,12 @@ export function OrdersTile(): JSX.Element {
 								}
 							)}`}
 						</p>
-
-						<ArchiveOrder
-							order={order}
-							onStatusUpdate={handleStatusUpdate}
-						/>
+						{order.status !== 'Completed' && (
+							<ArchiveOrder
+								order={order}
+								onStatusUpdate={handleStatusUpdate}
+							/>
+						)}
 					</div>
 				))}
 			</div>

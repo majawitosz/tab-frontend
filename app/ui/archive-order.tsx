@@ -19,7 +19,7 @@ export function ArchiveOrder({
 		try {
 			// Call the archive endpoint instead of a non-existent orders URL.
 			const response: Response = await fetch('/api/archive', {
-				method: 'PATCH',
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -32,7 +32,6 @@ export function ArchiveOrder({
 				throw new Error(errorData.detail || 'Failed to archive order');
 			}
 
-			// Expecting the PATCH endpoint to return the updated order.
 			const updatedOrder: OrdersDataResponse = await response.json();
 			onStatusUpdate(updatedOrder);
 		} catch (error: unknown) {
