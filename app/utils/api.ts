@@ -116,3 +116,22 @@ export async function submitOrder(
 		throw new Error(errorData.detail || 'Failed to submit order');
 	}
 }
+
+export async function createDishApi(
+	dish: Dish,
+	accessToken?: string
+): Promise<void> {
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+	};
+	if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+	const response: Response = await fetch(`${API_URL}/dania/dania`, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(dish),
+	});
+	if (!response.ok) {
+		const errorData: ErrorResponse = await response.json();
+		throw new Error(errorData.detail || 'Failed to submit dish');
+	}
+}
