@@ -117,6 +117,7 @@ export async function submitOrder(
 	}
 }
 
+
 export async function createDishApi(
 	dish: Dish,
 	accessToken?: string
@@ -133,5 +134,33 @@ export async function createDishApi(
 	if (!response.ok) {
 		const errorData: ErrorResponse = await response.json();
 		throw new Error(errorData.detail || 'Failed to submit dish');
+	}
+}
+
+
+export async function completeOrder(
+	orderId: number,
+	accessToken?: string
+): Promise<void> {
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+	};
+
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
+	const response: Response = await fetch(
+		`${API_URL}/dania/orders/${orderId}/status`,
+		{
+			method: 'PATCH',
+			headers,
+			body: JSON.stringify({ status: 'Completed' }), // Send status in the body
+		}
+	);
+
+	if (!response.ok) {
+		const errorData: ErrorResponse = await response.json();
+		throw new Error(errorData.detail || 'Failed to complete order');
 	}
 }

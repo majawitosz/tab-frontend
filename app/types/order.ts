@@ -27,6 +27,7 @@ export interface OrdersData {
 export interface OrdersDataResponse {
 	id: number;
 	table_number: number;
+	status: string;
 	created_at: Date;
 	total_amount: number;
 	notes: string;
