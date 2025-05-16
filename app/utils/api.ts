@@ -12,7 +12,7 @@ import { Dish, OrdersDataResponse } from '@/app/types/order';
 import { NextResponse } from 'next/server';
 import { OrdersData } from '@/app/types/order';
 
-const API_URL: string = 'https://Tab.garbatamalpa.com/api';
+const API_URL: string | undefined = process.env.NEXT_PUBLIC_API_URL;
 //const API_URL: string = 'http://localhost:8000/api';
 
 export async function registerUser(user: User): Promise<RegisterResponse> {
@@ -117,7 +117,6 @@ export async function submitOrder(
 	}
 }
 
-
 export async function createDishApi(
 	dish: Dish,
 	accessToken?: string
@@ -136,7 +135,6 @@ export async function createDishApi(
 		throw new Error(errorData.detail || 'Failed to submit dish');
 	}
 }
-
 
 export async function completeOrder(
 	orderId: number,
